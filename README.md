@@ -11,8 +11,8 @@ Well, it's just not efficient copying those long prompts every time from that te
 
 ### Screenshots
 
-![main](asset/Screenshot_2024-05-12-12-12-04_1366x768.png)
-![correct](asset/Screenshot_2024-05-12-12-17-14_1366x768.png)
+![main](asset/mainScreen.png)
+![correct](asset/mainScreenCorrect.png)
 
 ## Install :
 

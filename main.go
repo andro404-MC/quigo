@@ -9,19 +9,13 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"time"
-	"unicode/utf8"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
-	"fyne.io/fyne/v2/widget"
 	"github.com/BurntSushi/toml"
-	"github.com/sqweek/dialog"
 	"golang.design/x/clipboard"
-	"golang.org/x/exp/maps"
 )
 
 type configSTR struct {
@@ -53,104 +47,14 @@ func main() {
 		panic(err)
 	}
 
-	// home
-	confirmBtn := widget.NewButton("Go", nil)
-	confirmBtn.Disable()
-
-	combo := widget.NewSelect(maps.Keys(prompts), nil)
-
-	input := widget.NewEntry()
-	input.SetPlaceHolder("Enter text...")
-	input.MultiLine = true
-	input.Wrapping = fyne.TextWrapWord
-
-	aitext := widget.NewRichText()
-	aitext.ParseMarkdown(`# Quigo
-  1. Choose your option
-  2. Write your prompt
-  3. Go !!`)
-	aitext.Wrapping = fyne.TextWrapWord
-	aitext.Scroll = container.ScrollVerticalOnly
-
-	loading := widget.NewProgressBarInfinite()
-	loading.Hidden = true
-
-	copyText := widget.NewButtonWithIcon("", theme.ContentCopyIcon(), func() {
-		clipboard.Write(clipboard.FmtText, []byte(aitext.String()))
-	})
-	copyText.Disable()
-
-	btnValide := func(_ string) {
-		if combo.Selected != "" && utf8.RuneCountInString(input.Text) > 2 &&
-			utf8.RuneCountInString(config.Apikey) > 30 {
-			confirmBtn.Enable()
-		} else {
-			confirmBtn.Disable()
-		}
-	}
-	btnAction := func() {
-		loading.Hidden, aitext.Hidden = false, true
-		input.Disable()
-		confirmBtn.Disable()
-
-		value := input.Text
-		respond, err, merr := handle(value, prompts[combo.Selected])
-
-		if err != nil {
-			log.Println(err, " : ", merr)
-			dialog.Message("%s", err).Title("Error").Error()
-		} else {
-			aitext.ParseMarkdown(respond)
-			copyText.Enable()
-		}
-
-		loading.Hidden, aitext.Hidden = true, false
-		input.Enable()
-		confirmBtn.Enable()
-	}
-
-	combo.OnChanged, input.OnChanged = btnValide, btnValide
-	confirmBtn.OnTapped = func() { go btnAction() }
-
-	main := container.NewBorder(
-		combo,
-		container.NewGridWithColumns(2, confirmBtn, copyText),
-		nil,
-		nil,
-		container.New(
-			layout.NewGridLayoutWithColumns(1),
-			container.NewHSplit(input, container.NewGridWithColumns(1, loading, aitext)),
-		),
-	)
-
-	// Settings
-	apiLabel := widget.NewLabel("APIKEY")
-	apiInput := widget.NewPasswordEntry()
-	apiInput.Text = config.Apikey
-	apiInput.OnChanged = func(s string) { config.Apikey = s }
-	apiAplly := widget.NewButton("Save", func() { save(&config); load(&config) })
-
-	setting := container.NewBorder(
-		container.NewBorder(nil, nil, apiLabel, nil, apiInput),
-		apiAplly,
-		nil,
-		nil,
-		nil,
-	)
-
 	tabs := container.NewAppTabs(
-		container.NewTabItemWithIcon("", theme.HomeIcon(), main),
-		container.NewTabItemWithIcon("", theme.SettingsIcon(), setting),
+		container.NewTabItemWithIcon("", theme.HomeIcon(), mainTab()),
+		container.NewTabItemWithIcon("", theme.SettingsIcon(), settingTab()),
 	)
 
 	tabs.SetTabLocation(container.TabLocationLeading)
 	myWindow.SetContent(tabs)
 	myWindow.ShowAndRun()
-}
-
-func AIBULLSHIT(text string) string {
-	time.Sleep(2 * time.Second)
-	return text
 }
 
 func handle(value string, prompt string) (respond string, err error, moreError error) {
