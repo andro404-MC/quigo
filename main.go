@@ -62,14 +62,14 @@ func main() {
 	input := widget.NewEntry()
 	input.SetPlaceHolder("Enter text...")
 	input.MultiLine = true
-	input.Wrapping = fyne.TextWrapBreak
+	input.Wrapping = fyne.TextWrapWord
 
 	aitext := widget.NewRichText()
 	aitext.ParseMarkdown(`# Quigo
   1. Choose your option
   2. Write your prompt
   3. Go !!`)
-	aitext.Wrapping = fyne.TextWrapBreak
+	aitext.Wrapping = fyne.TextWrapWord
 	aitext.Scroll = container.ScrollVerticalOnly
 
 	loading := widget.NewProgressBarInfinite()
