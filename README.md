@@ -21,7 +21,7 @@ Well, it's just not efficient copying those long prompts every time from that te
 
 #### Window :
 
-- Just install the release executable.
+Just run the release executable.
 
 #### Linux :
 
