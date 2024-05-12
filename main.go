@@ -20,6 +20,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"github.com/BurntSushi/toml"
 	"github.com/sqweek/dialog"
+	"golang.design/x/clipboard"
 )
 
 type configSTR struct {
@@ -43,6 +44,10 @@ func main() {
 	myWindow := myApp.NewWindow("Quigo")
 	myWindow.Resize(fyne.NewSize(800, 400))
 	load(&config)
+	err := clipboard.Init()
+	if err != nil {
+		panic(err)
+	}
 
 	// home
 	confirmBtn := widget.NewButton("Go", nil)
@@ -65,6 +70,10 @@ func main() {
 
 	loading := widget.NewProgressBarInfinite()
 	loading.Hidden = true
+
+	copyText := widget.NewButtonWithIcon("", theme.ContentCopyIcon(), func() {
+		clipboard.Write(clipboard.FmtText, []byte(aitext.String()))
+	})
 
 	btnValide := func(_ string) {
 		if combo.Selected != "" && utf8.RuneCountInString(input.Text) > 2 &&
@@ -109,7 +118,7 @@ func main() {
 
 	main := container.NewBorder(
 		combo,
-		confirmBtn,
+		container.NewGridWithColumns(2, confirmBtn, copyText),
 		nil,
 		nil,
 		container.New(
