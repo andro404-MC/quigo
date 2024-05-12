@@ -21,18 +21,22 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/sqweek/dialog"
 	"golang.design/x/clipboard"
+	"golang.org/x/exp/maps"
 )
 
 type configSTR struct {
 	Apikey string
 }
 
-var config configSTR
+var (
+	config  configSTR
+	prompts = map[string]string{
+		"Ask":     "give the shortest respond MAX 50 words",
+		"Correct": "Correct the grammar of the following sentence without any extra text just pure correction",
+	}
+)
 
 const (
-	askP     = "give the shortest respond MAX 50 words"
-	correctP = "Correct the grammar of the following sentence without any extra text just pure correction"
-
 	url        = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key="
 	configPath = "/.config/quigo/quigo.conf"
 )
@@ -53,7 +57,7 @@ func main() {
 	confirmBtn := widget.NewButton("Go", nil)
 	confirmBtn.Disable()
 
-	combo := widget.NewSelect([]string{"Ask", "Correct"}, nil)
+	combo := widget.NewSelect(maps.Keys(prompts), nil)
 
 	input := widget.NewEntry()
 	input.SetPlaceHolder("Enter text...")
@@ -90,17 +94,7 @@ func main() {
 		confirmBtn.Disable()
 
 		value := input.Text
-		var prompt string
-		switch combo.Selected {
-		case "Ask":
-			prompt = askP
-			break
-		case "Correct":
-			prompt = correctP
-			break
-		}
-
-		respond, err, merr := handle(value, prompt)
+		respond, err, merr := handle(value, prompts[combo.Selected])
 
 		if err != nil {
 			log.Println(err, " : ", merr)
