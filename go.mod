@@ -1,4 +1,4 @@
-module quigo-gui
+module quigo
 
 go 1.22.3
 
