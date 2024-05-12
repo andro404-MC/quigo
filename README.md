@@ -14,8 +14,6 @@ A simple Google Gemini prompter made with [fyne](https://github.com/fyne-io/fyne
   />
 </p>
 
-![Pass]()
-
 ### Screenshots
 
 ![main](asset/Screenshot_2024-05-12-12-12-04_1366x768.png)
