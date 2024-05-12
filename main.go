@@ -31,7 +31,7 @@ var config configSTR
 
 const (
 	askP     = "give the shortest respond MAX 50 words"
-	correctP = "Correct the grammar of the following sentence without any extra text just pure correction : "
+	correctP = "Correct the grammar of the following sentence without any extra text just pure correction"
 
 	url        = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key="
 	configPath = "/.config/quigo/quigo.conf"
