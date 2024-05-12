@@ -1,7 +1,3 @@
-# Quigo-gui
-
-A simple Google Gemini prompter made with [fyne](https://github.com/fyne-io/fyne/) and the Power of Go.
-
 <p align="center">
   <img
     src="https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white"
@@ -13,6 +9,10 @@ A simple Google Gemini prompter made with [fyne](https://github.com/fyne-io/fyne
     src="https://github.com/andro404-MC/quigo-gui/actions/workflows/test.yml/badge.svg"
   />
 </p>
+
+# Quigo-gui
+
+A simple Google Gemini prompter made with [fyne](https://github.com/fyne-io/fyne/) and the Power of Go.
 
 ### Screenshots
 
