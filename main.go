@@ -30,8 +30,8 @@ type configSTR struct {
 var config configSTR
 
 const (
-	askP     = "give the shortest respond MAX 30 words"
-	correctP = "give only the correction of this nothing more just the same text but corrected no extra text like 'corrected text' i dont want any of that just correction and be acurret dont forget any word"
+	askP     = "give the shortest respond MAX 50 words"
+	correctP = "Correct the grammar of the following sentence without any extra text just pure correction : "
 
 	url        = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key="
 	configPath = "/.config/quigo/quigo.conf"
@@ -74,6 +74,7 @@ func main() {
 	copyText := widget.NewButtonWithIcon("", theme.ContentCopyIcon(), func() {
 		clipboard.Write(clipboard.FmtText, []byte(aitext.String()))
 	})
+	copyText.Disable()
 
 	btnValide := func(_ string) {
 		if combo.Selected != "" && utf8.RuneCountInString(input.Text) > 2 &&
@@ -106,6 +107,7 @@ func main() {
 			dialog.Message("%s", err).Title("Error").Error()
 		} else {
 			aitext.ParseMarkdown(respond)
+			copyText.Enable()
 		}
 
 		loading.Hidden, aitext.Hidden = true, false
