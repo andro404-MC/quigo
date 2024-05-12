@@ -126,8 +126,9 @@ func main() {
 	// Settings
 	apiLabel := widget.NewLabel("APIKEY")
 	apiInput := widget.NewPasswordEntry()
-	apiAplly := widget.NewButton("Save", func() { save(&config); load(&config) })
 	apiInput.Text = config.Apikey
+	apiInput.OnChanged = func(s string) { config.Apikey = s }
+	apiAplly := widget.NewButton("Save", func() { save(&config); load(&config) })
 
 	setting := container.NewBorder(
 		container.NewBorder(nil, nil, apiLabel, nil, apiInput),
