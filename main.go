@@ -4,38 +4,21 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
-	"github.com/BurntSushi/toml"
 	"golang.design/x/clipboard"
 )
 
-type configSTR struct {
-	Apikey string
-}
-
-var (
-	config  configSTR
-	prompts = map[string]string{
-		"Ask":     "give the shortest respond MAX 50 words",
-		"Correct": "Correct the grammar of the following sentence without any extra text just pure correction",
-	}
-)
+var APIKEY string
 
 const (
 	url        = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key="
 	configPath = "/.config/quigo/quigo.conf"
 )
-
-var APIKEY string
 
 func main() {
 	myApp := app.New()
@@ -122,52 +105,4 @@ func handle(value string, prompt string) (respond string, err error, moreError e
 	}
 
 	return generatedText, nil, nil
-}
-
-func load(c *configSTR) {
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		log.Println("Error getting user home directory:", err)
-		os.Exit(3)
-	}
-
-	fullPath := homeDir + configPath
-	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
-		c.Apikey = "GEMINI-PRO"
-		return
-	}
-
-	_, err = toml.DecodeFile(fullPath, &c)
-	if err != nil {
-		log.Println("Error:", err)
-		return
-	}
-
-	return
-}
-
-func save(c *configSTR) {
-	fileString := fmt.Sprintf("apikey = \"%s\"", c.Apikey)
-
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		log.Println("Error getting user home directory:", err)
-		os.Exit(3)
-	}
-
-	fullPath := homeDir + configPath
-
-	dirPath := filepath.Dir(fullPath)
-	err = os.MkdirAll(dirPath, os.ModePerm)
-	if err != nil {
-		fmt.Println("Error creating directory:", err)
-		return
-	}
-
-	err = os.WriteFile(fullPath, []byte(fileString), 0o644)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
-	return
 }

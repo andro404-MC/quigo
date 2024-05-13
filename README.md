@@ -1,4 +1,4 @@
-# Quigo ![pass](https://github.com/andro404-MC/quigo-gui/actions/workflows/test.yml/badge.svg)
+# Quigo ![pass](https://github.com/andro404-MC/quigo-gui/actions/workflows/test.yml/badge.svg) ![GitHub License](https://img.shields.io/github/license/andro404-MC/quigo) ![GitHub Release](https://img.shields.io/github/v/release/andro404-MC/quigo)
 
 A simple Google Gemini prompt saver made using Go and [fyne](https://github.com/fyne-io/fyne/).
 
