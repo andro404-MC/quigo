@@ -6,7 +6,6 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/sqweek/dialog"
@@ -14,11 +13,13 @@ import (
 	"golang.org/x/exp/maps"
 )
 
+var combo *widget.Select
+
 func mainTab() *fyne.Container {
-	confirmBtn := widget.NewButton("Go", nil)
+	confirmBtn := widget.NewButtonWithIcon("", theme.MailSendIcon(), nil)
 	confirmBtn.Disable()
 
-	combo := widget.NewSelect(maps.Keys(prompts), nil)
+	combo = widget.NewSelect(maps.Keys(config.Prompts), nil)
 
 	input := widget.NewEntry()
 	input.SetPlaceHolder("Enter text...")
@@ -55,7 +56,7 @@ func mainTab() *fyne.Container {
 		confirmBtn.Disable()
 
 		value := input.Text
-		respond, err, merr := handle(value, prompts[combo.Selected])
+		respond, err, merr := handle(value, config.Prompts[combo.Selected].Text)
 
 		if err != nil {
 			log.Println(err, " : ", merr)
@@ -74,14 +75,15 @@ func mainTab() *fyne.Container {
 	confirmBtn.OnTapped = func() { go btnAction() }
 
 	main := container.NewBorder(
-		combo,
-		container.NewGridWithColumns(2, confirmBtn, copyText),
-		nil,
-		nil,
-		container.New(
-			layout.NewGridLayoutWithColumns(1),
-			container.NewHSplit(input, container.NewGridWithColumns(1, loading, aitext)),
+		container.NewVBox(
+			widget.NewSeparator(),
+			combo,
+			container.NewBorder(nil, nil, nil, confirmBtn, input),
 		),
+		copyText,
+		nil,
+		nil,
+		container.NewGridWithColumns(1, loading, aitext),
 	)
 
 	return main

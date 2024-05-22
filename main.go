@@ -15,10 +15,7 @@ import (
 
 var APIKEY string
 
-const (
-	url        = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key="
-	configPath = "/.config/quigo/quigo.conf"
-)
+const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key="
 
 func main() {
 	myApp := app.New()
@@ -31,11 +28,11 @@ func main() {
 	}
 
 	tabs := container.NewAppTabs(
-		container.NewTabItemWithIcon("", theme.HomeIcon(), mainTab()),
-		container.NewTabItemWithIcon("", theme.SettingsIcon(), settingTab()),
+		container.NewTabItemWithIcon("AI", theme.ComputerIcon(), mainTab()),
+		container.NewTabItemWithIcon("Settings", theme.SettingsIcon(), settingTab()),
 	)
 
-	tabs.SetTabLocation(container.TabLocationLeading)
+	tabs.SetTabLocation(container.TabLocationTop)
 	myWindow.SetContent(tabs)
 	myWindow.ShowAndRun()
 }

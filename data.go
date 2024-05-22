@@ -10,16 +10,17 @@ import (
 )
 
 type configSTR struct {
-	Apikey string
+	Apikey  string
+	Prompts map[string]prompt
 }
 
-var (
-	config  configSTR
-	prompts = map[string]string{
-		"Ask":     "give the shortest respond MAX 50 words",
-		"Correct": "Correct the grammar of the following sentence without any extra text just pure correction",
-	}
-)
+type prompt struct {
+	Text string
+}
+
+var config configSTR
+
+const configPath = "/.config/quigo/quigo.conf"
 
 func load(c *configSTR) {
 	homeDir, err := os.UserHomeDir()
@@ -31,6 +32,11 @@ func load(c *configSTR) {
 	fullPath := homeDir + configPath
 	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
 		c.Apikey = "GEMINI-PRO"
+		c.Prompts = make(map[string]prompt)
+		c.Prompts["Ask"] = prompt{Text: "give the shortest respond MAX 50 words"}
+		c.Prompts["Correct"] = prompt{
+			Text: "Correct the grammar of the following sentence without any extra text just pure correction",
+		}
 		return
 	}
 
@@ -44,7 +50,10 @@ func load(c *configSTR) {
 }
 
 func save(c *configSTR) {
-	fileString := fmt.Sprintf("apikey = \"%s\"", c.Apikey)
+	fileString := fmt.Sprintf("apikey = \"%s\"\n", c.Apikey)
+	for i, x := range c.Prompts {
+		fileString += fmt.Sprintf("\n[Prompts.%s]\n   Text = \"%s\"\n", i, x.Text)
+	}
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {

@@ -3,45 +3,75 @@ package main
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"golang.org/x/exp/maps"
 )
 
 func settingTab() *fyne.Container {
-	data := [][]string{
-		maps.Keys(prompts),
-		maps.Values(prompts),
-	}
-
 	apiLabel := widget.NewLabel("APIKEY")
 	apiInput := widget.NewPasswordEntry()
 	apiInput.Text = config.Apikey
 	apiInput.OnChanged = func(s string) { config.Apikey = s }
 
-	promptNameLabel := widget.NewLabel("Pormpt name")
 	promptNameInput := widget.NewEntry()
-	promptLabel := widget.NewLabel("Prompt")
-	promptInput := widget.NewEntry()
-	promptAdd := widget.NewButton("Add", nil)
+	promptInput := widget.NewMultiLineEntry()
+	promptAdd := widget.NewButtonWithIcon("", theme.ContentAddIcon(), nil)
+	promptAdd.Disable()
 
-	promptTable := widget.NewTableWithHeaders(
-		func() (int, int) {
-			return len(data[0]), len(data)
+	form := &widget.Form{
+		Items: []*widget.FormItem{
+			{Text: "Name", Widget: promptNameInput},
+			{Text: "Prompt", Widget: promptInput},
 		},
-		func() fyne.CanvasObject {
-			return widget.NewLabel("wide content")
-		},
-		func(i widget.TableCellID, o fyne.CanvasObject) {
-			o.(*widget.Label).SetText(data[i.Col][i.Row])
-		},
-	)
-	promptTable.StickyColumnCount = 2
-	promptTable.ShowHeaderColumn = false
+	}
 
+	promptDelText := widget.NewLabel("Prompt")
+
+	promptShowText := widget.NewRichText()
+	promptShowText.Wrapping = fyne.TextWrapWord
+	promptShowText.Scroll = container.ScrollVerticalOnly
+
+	promptDelCombo := widget.NewSelect(maps.Keys(config.Prompts), nil)
+	promptDelCombo.OnChanged = func(s string) {
+		promptShowText.ParseMarkdown(config.Prompts[s].Text)
+	}
+	promptDel := widget.NewButtonWithIcon("", theme.DeleteIcon(), func() {
+		delete(config.Prompts, promptDelCombo.Selected)
+		promptDelCombo.Options = maps.Keys(config.Prompts)
+		promptDelCombo.Selected = ""
+		combo.Options = maps.Keys(config.Prompts)
+		combo.Selected = ""
+		promptShowText.ParseMarkdown("")
+	})
+
+	promptAdd.OnTapped = func() {
+		config.Prompts[promptNameInput.Text] = prompt{Text: promptInput.Text}
+
+		promptNameInput.Text, promptInput.Text = "", ""
+
+		promptDelCombo.Options = maps.Keys(config.Prompts)
+		combo.Options = maps.Keys(config.Prompts)
+
+		form.Refresh()
+		promptAdd.Disable()
+	}
+
+	dataChanged := func(_ string) {
+		if promptInput.Text == "" || promptNameInput.Text == "" {
+			promptAdd.Disable()
+		} else {
+			promptAdd.Enable()
+		}
+	}
+
+	promptInput.OnChanged = dataChanged
+	promptNameInput.OnChanged = dataChanged
 	settingsAplly := widget.NewButton("Save", func() { save(&config); load(&config) })
 
 	setting := container.NewBorder(
 		container.NewVBox(
+			widget.NewSeparator(),
 			container.NewBorder(
 				nil,
 				nil,
@@ -50,14 +80,26 @@ func settingTab() *fyne.Container {
 				apiInput,
 			),
 			widget.NewSeparator(),
-			container.NewBorder(nil, nil, promptNameLabel, nil, promptNameInput),
-			container.NewBorder(nil, nil, promptLabel, nil, promptInput),
-			promptAdd,
+			container.NewBorder(
+				nil,
+				nil,
+				nil,
+				promptAdd,
+				form,
+			),
+			widget.NewSeparator(),
+			container.NewBorder(
+				nil,
+				nil,
+				promptDelText,
+				promptDel,
+				promptDelCombo,
+			),
 		),
 		settingsAplly,
 		nil,
 		nil,
-		promptTable,
+		promptShowText,
 	)
 
 	return setting
