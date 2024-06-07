@@ -12,7 +12,10 @@ func settingTab() *fyne.Container {
 	apiLabel := widget.NewLabel("APIKEY")
 	apiInput := widget.NewPasswordEntry()
 	apiInput.Text = config.Apikey
-	apiInput.OnChanged = func(s string) { config.Apikey = s }
+	apiInput.OnChanged = func(s string) {
+		config.Apikey = s
+		unstagedChanges = true
+	}
 
 	promptNameInput := widget.NewEntry()
 	promptInput := widget.NewMultiLineEntry()
@@ -43,6 +46,8 @@ func settingTab() *fyne.Container {
 		combo.Options = maps.Keys(config.Prompts)
 		combo.Selected = ""
 		promptShowText.ParseMarkdown("")
+
+		unstagedChanges = true
 	})
 
 	promptAdd.OnTapped = func() {
@@ -55,6 +60,8 @@ func settingTab() *fyne.Container {
 
 		form.Refresh()
 		promptAdd.Disable()
+
+		unstagedChanges = true
 	}
 
 	dataChanged := func(_ string) {

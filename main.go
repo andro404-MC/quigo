@@ -10,6 +10,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
+	"github.com/sqweek/dialog"
 	"golang.design/x/clipboard"
 )
 
@@ -30,6 +31,23 @@ func main() {
 	tabs := container.NewAppTabs(
 		container.NewTabItemWithIcon("AI", theme.ComputerIcon(), mainTab()),
 		container.NewTabItemWithIcon("Settings", theme.SettingsIcon(), settingTab()),
+	)
+
+	myWindow.SetCloseIntercept(
+		func() {
+			if unstagedChanges {
+				ok := dialog.Message("%s", "Changes not saved. Do you still want to Quit?").
+					Title("Quit ?").
+					YesNo()
+
+				if ok {
+					myApp.Quit()
+				}
+
+			} else {
+				myApp.Quit()
+			}
+		},
 	)
 
 	tabs.SetTabLocation(container.TabLocationTop)

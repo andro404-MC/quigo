@@ -18,7 +18,10 @@ type prompt struct {
 	Text string
 }
 
-var config configSTR
+var (
+	config          configSTR
+	unstagedChanges bool
+)
 
 const configPath = "/.config/quigo/quigo.conf"
 
@@ -75,5 +78,6 @@ func save(c *configSTR) {
 		fmt.Println("Error:", err)
 		return
 	}
+	unstagedChanges = false
 	return
 }
