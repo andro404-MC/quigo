@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"unicode/utf8"
 
@@ -15,7 +16,7 @@ import (
 
 var combo *widget.Select
 
-func mainTab() *fyne.Container {
+func mainTab(window fyne.Window, app fyne.App) *fyne.Container {
 	confirmBtn := widget.NewButtonWithIcon("", theme.MailSendIcon(), nil)
 	confirmBtn.Disable()
 
@@ -60,7 +61,12 @@ func mainTab() *fyne.Container {
 
 		if err != nil {
 			log.Println(err, " : ", merr)
-			dialog.Message("%s", err).Title("Error").Error()
+
+			if window.Canvas().Focused() != nil {
+				dialog.Message("%s", err).Title("Error").Error()
+			} else {
+				app.SendNotification(&fyne.Notification{Content: fmt.Sprintf("%s", err), Title: "Quigo"})
+			}
 		} else {
 			aitext.ParseMarkdown(respond)
 			copyText.Enable()

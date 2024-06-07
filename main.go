@@ -29,7 +29,7 @@ func main() {
 	}
 
 	tabs := container.NewAppTabs(
-		container.NewTabItemWithIcon("AI", theme.ComputerIcon(), mainTab()),
+		container.NewTabItemWithIcon("AI", theme.ComputerIcon(), mainTab(myWindow, myApp)),
 		container.NewTabItemWithIcon("Settings", theme.SettingsIcon(), settingTab()),
 	)
 
