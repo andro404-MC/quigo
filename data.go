@@ -55,7 +55,7 @@ func load(c *configSTR) {
 func save(c *configSTR) {
 	fileString := fmt.Sprintf("apikey = \"%s\"\n", c.Apikey)
 	for i, x := range c.Prompts {
-		fileString += fmt.Sprintf("\n[Prompts.%s]\n   Text = \"%s\"\n", i, x.Text)
+		fileString += fmt.Sprintf("\n[Prompts.\"%s\"]\n   Text = \"%s\"\n", i, x.Text)
 	}
 
 	homeDir, err := os.UserHomeDir()
